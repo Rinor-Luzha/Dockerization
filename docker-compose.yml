@@ -1,0 +1,50 @@
+version: ‘3.4’
+services:
+  dockerization:
+    image: ${DOCKER_REGISTRY-}dockerization
+    container_name: dockerization
+    networks:
+      - dev
+    ports:
+      - 5214:80
+    build:
+      context: .
+      dockerfile: Dockerization/Dockerfile
+    depends_on:
+      - postgres
+  postgres:
+    container_name: postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: life
+      POSTGRES_PASSWORD: phase3
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - 5432:5432
+    networks:
+      - postgres
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: life@gjirafa.com
+      PGADMIN_DEFAULT_PASSWORD: phase3
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - 8080:80
+    networks:
+      - postgres
+
+networks:
+  postgres:
+    driver: bridge
+  dev:
+    driver: bridge
+volumes:
+  postgres:
+    driver: local
+  pgadmin:
+    driver: local
