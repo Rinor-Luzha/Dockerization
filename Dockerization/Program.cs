@@ -27,8 +27,16 @@ builder.Services.AddScoped<IPetService, PetService>();
 var app = builder.Build();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-app.UseSwagger();
-app.UseSwaggerUI();
+using var scope = app.Services.CreateScope();
+var dbContext = scope.ServiceProvider.GetService<AppDbContext>();
+await dbContext!.Database.MigrateAsync();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseAuthorization();
 
